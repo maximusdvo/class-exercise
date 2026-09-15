@@ -54,7 +54,7 @@ parser.add_argument("--verbose", "-v",
 
 
 # TODO 5: Parse the command-line arguments
-
+args = parser.parse_args()
 p = Path(args.input)
 if not p.is_file():
     print(f"File not found: '{args.input}'")
