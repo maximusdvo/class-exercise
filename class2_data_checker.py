@@ -1,3 +1,7 @@
+"""Creating a data checker to make sure data is good(?)"""
+
+
+
 import argparse
 import csv
 import sys
