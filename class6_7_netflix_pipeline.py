@@ -6,16 +6,19 @@ from pathlib import Path
 
 import pandas as pd
 
-from class6_7_netflix_utils import (
+from class6_7_netflix_utils import(
+    clean_text,
     drop_missing_rows,
     remove_duplicates,
     show_overview,
+    remove_iqr_outliers
 )
 
 logger = logging.getLogger(__name__)
 
 
 def main():
+    "main"
     parser = argparse.ArgumentParser(
         description="Explore Netflix titles"
     )
@@ -52,6 +55,8 @@ def main():
     # and exit with sys.exit(1).
     # Log an INFO message.
 
+    df_original = df.copy()
+
     # TODO 5:
     show_overview(df)
     logger.info("displayed DataFrame Overview")
@@ -68,10 +73,41 @@ def main():
     df = drop_missing_rows(df)
     logger.info(f"dropped {before - df.shape[0]} rows wiht missing values")
 
+
     # Call remove_duplicates().
     # Call drop_missing_rows().
     # Log an INFO message after each step that
     # includes the number of rows removed.
+
+    # TODO 3:
+    # Inside a try block, remove runtime_minutes outliers
+    # using remove_iqr_outliers() with a threshold of 1.5.
+    # Catch ValueError and exit with sys.exit(1).# Log an INFO message.
+    before = df.shape[0]
+    try:
+        df = remove_iqr_outliers(df, "runtime_minutes", 1.5)
+    except ValueError:
+        sys.exit(1)
+    logger.info(f"Removed {before - df.shape[0]} runtime_minutes outliers")
+
+    # TODO 4:
+    # Apply clean_text() to title, type, and country.
+    # Log an INFO message
+    for column in ["title", "type", "country"]:
+        df[column] = df[column].apply(clean_text)
+        logger.info(f"CLeaned text column: {column}")
+
+    # TODO 5:
+    # Create a report (dictionary) containing rows_before, rows_after, rows_removed, and columns.
+    # Log an INFO message reporting: rows_before, rows_after, rows_removed, and columns.
+    report = {
+        "rows_before": df_original.shape[0],
+        "rows_after": df.shape[0],
+        "rows_removed": df_original.shape[0] - df.shape[0],
+        "columns": df.shape[1],
+    }
+    logger.info(f"Cleaning complete: {report}")
+
 
 if __name__ == "__main__":
     main()
